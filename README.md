@@ -10,6 +10,15 @@ This is the base Nerves System configuration for the Raspberry Pi 5 Model B.
 the `maint-v0.x` branch. See the "Upgrading to 2.0" section if you are upgrading
 your Nerves system dependency.*
 
+**IMPORTANT:** If your Raspberry Pi 5 was manufactured a long time ago, please
+upgrade the bootloader EEPROM firmware. This has fixed issues preventing devices
+from booting or rebooting. Raspberry Pi OS has a [reliable way of updating the
+EEPROM](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#bootloader_update_stable).
+You may have success with
+[nerves_rpi_eeprom](https://github.com/fhunleth/nerves_rpi_eeprom) if you're
+running a pre-2.0 firmware and haven't upgraded yet.
+
+
 ![Raspberry Pi 5 image](assets/images/RaspberryPi_5B.svg)
 <br><sup>[Efa / Wikimedia Commons / CC BY-SA
 4.0](https://en.wikipedia.org/wiki/Raspberry_Pi#/media/File:RaspberryPi_5B_28-08-2024.svg)</sup>
@@ -36,12 +45,12 @@ your Nerves system dependency.*
 
 The most common way of using this Nerves System is create a project with `mix
 nerves.new` and to export `MIX_TARGET=rpi5`. See the [Getting started
-guide](https://hexdocs.pm/nerves/getting-started.html#creating-a-new-nerves-app)
+guide](https://nerves.hexdocs.pm/getting-started.html#creating-a-new-nerves-app)
 for more information.
 
 If you need custom modifications to this system for your device, clone this
 repository and update as described in [Making custom
-systems](https://hexdocs.pm/nerves/customizing-systems.html).
+systems](https://nerves.hexdocs.pm/customizing-systems.html).
 
 ## Upgrading to 2.0
 
@@ -55,7 +64,7 @@ If you don't do this, the device will run the old firmware on the next reboot.
 A simple default way of validating the firmware can be enabled using
 Nerves.Runtime's startup guard feature as described in [Assisted firmware
 validation and automatic
-revert](https://hexdocs.pm/nerves_runtime/readme.html#assisted-firmware-validation-and-automatic-revert).
+revert](https://nerves-runtime.hexdocs.pm/readme.html#assisted-firmware-validation-and-automatic-revert).
 Please follow the directions there for the needed config file update.
 
 If in doubt, use `mix nerves.new` to create a new project and compare what it
@@ -63,11 +72,12 @@ creates to your project. If you haven't modified the Nerves-specific
 configuration parts of your project much, the firmware validation piece should
 be the main update.
 
-**IMPORTANT:** If you bought your Raspberry Pi 5 a long time ago, it may need a
-bootloader EEPROM firmware update. There was an issue where rebooting after a
-firmware update didn't work that was resolved by a newer bootloader. The
-Raspberry Pi OS is the reliable way of updating the EEPROM, but you may have
-success with [nerves_rpi_eeprom](https://github.com/fhunleth/nerves_rpi_eeprom).
+Please also review your use of `Nerves.Runtime.KV` in your application since the
+`nerves_fw_active` key no longer is used. Use `Nerves.Runtime.firmware_slots/0`
+to determine the active firmware slot. The `nerves_fw_active` key wasn't always
+accurate, so it was removed to avoid a misleading answer. The function call is
+reliable and also a generic way to determine slot status on all Nerves
+platforms.
 
 ## Supported WiFi devices
 
@@ -124,7 +134,7 @@ outside of any filesystem. Provisioning is an optional step and reasonable
 defaults are provided if this is missing.
 
 Provisioning information can be queried using the Nerves.Runtime KV store's
-[`Nerves.Runtime.KV.get/1`](https://hexdocs.pm/nerves_runtime/Nerves.Runtime.KV.html#get/1)
+[`Nerves.Runtime.KV.get/1`](https://nerves-runtime.hexdocs.pm/Nerves.Runtime.KV.html#get/1)
 function.
 
 Keys used by this system are:
